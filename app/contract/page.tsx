@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react"
 import { columns, Contract } from "./columns"
 import { DataTable } from "./data-table"
+import { Button } from "@/components/ui/button"
 
 export default function ContractPage() {
   const [data, setData] = useState<Contract[]>([])
@@ -50,6 +51,8 @@ export default function ContractPage() {
 
   return (
     <div className="container mx-auto py-10">
+      <div className="flex justify-between items-center mb-4">
+      </div>
       <DataTable columns={columns} data={data} />
     </div>
   )

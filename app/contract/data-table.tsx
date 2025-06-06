@@ -95,6 +95,9 @@ export function DataTable<TData, TValue>({
           <p className="text-sm font-medium">สัญญา</p>
           </Select>
         </div>
+        <div>
+          <Button className="bg-orange-400 hover:bg-orange-500 text-white">เพิ่มสัญญา</Button>
+        </div>
         <div className="flex items-center py-4">
           <Input
           placeholder="ค้นหาชื่อโครงการ"
