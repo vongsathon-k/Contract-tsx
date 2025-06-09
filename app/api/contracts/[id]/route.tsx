@@ -1,12 +1,10 @@
 import { createConnection } from '../../../../lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
-    const id = params.id
+    const id = await params.id
     const connection = await createConnection()
     
     const [rows] = await connection.execute(
@@ -34,10 +32,8 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const id = params.id
     const body = await request.json()
@@ -74,4 +70,5 @@ export async function PUT(
       { error: 'Failed to update contract' },
       { status: 500 }
     )
-}}
+}
+}
