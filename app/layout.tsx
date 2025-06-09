@@ -1,8 +1,8 @@
 import Navbar from "@/components/Navbar";
 import "./globals.css";
-import Link from "next/link"
 import { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider"
+import { ModeToggle } from "@/components/mode-toggle"
 
 
 export const metadata: Metadata = {
@@ -21,6 +21,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         <Navbar />
         {children}
+        <div className="fixed bottom-4 right-4 z-50">
+          <ModeToggle />
+        </div>
         </ThemeProvider>
       </body>
     </html>
