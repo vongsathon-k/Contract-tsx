@@ -55,7 +55,16 @@
 
     --chart-5: 27 87% 67%;
 
-    --radius: 0.5rem
+    --radius: 0.5rem;
+
+    --font-sans: var(--font-kanit);
+
+    * {
+      font-family: var(--font-kanit), ui-sans-serif, system-ui, sans-serif;
+    }
+    body {
+      font-family: var(--font-kanit), ui-sans-serif, system-ui, sans-serif;
+    }
   }
   .dark {
 

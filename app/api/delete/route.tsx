@@ -46,7 +46,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Contract deleted successfully'
     });
 
-  } catch (error) {
+  } catch (error : any) {
     console.error('Database delete error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete contract', details: error.message },

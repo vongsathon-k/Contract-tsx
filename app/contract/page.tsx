@@ -4,7 +4,15 @@
 import { useState, useEffect } from "react"
 import { columns, Contract } from "./columns"
 import { DataTable } from "./data-table"
-import { Button } from "@/components/ui/button"
+import { ClipLoader, BeatLoader, PulseLoader } from 'react-spinners'
+
+async function getData(): Promise<Contract[]> {
+  const response = await fetch('/api/contracts')
+  if (!response.ok) {
+    throw new Error('Failed to fetch contracts')
+  }
+  return response.json()
+}
 
 export default function ContractPage() {
   const [data, setData] = useState<Contract[]>([])
@@ -15,13 +23,7 @@ export default function ContractPage() {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await fetch('/api/contracts') // Create this API route
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch contracts')
-        }
-        
-        const contracts = await response.json()
+        const contracts = await getData()
         setData(contracts)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
@@ -35,25 +37,36 @@ export default function ContractPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto py-10">
-        <div className="text-center">กำลังโหลด...</div>
+      <div className="container mx-auto py-7">
+        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+          <ClipLoader
+            color="#f97316"
+            loading={loading}
+            size={50}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+          <div className="text-center text-lg font-medium text-gray-600">
+            กำลังโหลดข้อมูลสัญญา...
+          </div>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="container mx-auto py-10">
+      <div className="container mx-auto py-7">
         <div className="text-center text-red-500">เกิดข้อผิดพลาด: {error}</div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-7">
       <div className="flex justify-between items-center mb-4">
       </div>
-      <DataTable columns={columns} data={data} />
+          <DataTable columns={columns} data={data} />
     </div>
   )
 }

@@ -27,9 +27,7 @@ export function DataTablePagination<TData>({
         กำลังแสดง {table.getRowModel().rows.length} จาก{" "}
         {table.getCoreRowModel().rows.length} สัญญาทั้งหมด
       </div>
-      <div className="flex items-center space-x-6 lg:space-x-8">
-        
-        
+      <div className="flex items-center space-x-6 lg:space-x-8 my-2">
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"

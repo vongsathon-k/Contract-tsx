@@ -1,5 +1,5 @@
 import { createConnection } from '../../../lib/db'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET() {
   try {
@@ -52,6 +52,48 @@ export async function GET() {
     console.error('Error fetching contracts:', error)
     return NextResponse.json(
       { error: 'Failed to fetch contracts' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { recorder, division, project_name, way_type,
+      fund_source,
+      budget,
+      contract_budget,
+      partner_name,
+      deposit_type,
+      deposit_amount,
+      waranty, end_date } = body
+
+    // Validate required fields
+    // if (!recorder || !division || !project_name || !end_date) {
+    //   return NextResponse.json(
+    //     { success: false, error: 'All fields are required' },
+    //     { status: 400 }
+    //   )
+    // }
+
+    const connection = await createConnection()
+    const params = [recorder || null, parseInt(division), project_name || null,  parseInt(way_type), fund_source || null, budget || null, contract_budget || null, partner_name || null, parseInt(deposit_type), deposit_amount || null, end_date || null, waranty || null]
+    const [result] = await connection.execute(
+      'INSERT INTO contract (`recorder`, `division_name`, `project_name`, `way_type`, `fund_source`, `budget`, `contract_budg`, `partner_name`, `deposit_type`, `deposit_amount`, `end_date`, `waranty`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        params
+    )
+
+    return NextResponse.json({
+      success: true,
+      message: 'Contract created successfully',
+      id: (result as any).insertId
+    })
+
+  } catch (error) {
+    console.error('Database insert error:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to create contract' },
       { status: 500 }
     )
   }
