@@ -1,6 +1,5 @@
-const LoginPage = () => {
-  return (
-    <div>LoginPage</div>
-  )
+import LoginForm from "./login-form";
+
+export default function LoginPage() {
+  return <LoginForm />;
 }
-export default LoginPage

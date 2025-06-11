@@ -7,6 +7,7 @@ export const createConnection = async (): Promise<mysql.Connection> => {
         try {
             connection = await mysql.createConnection({
                 host: process.env.DATABASE_HOST,
+                port: parseInt(process.env.DATABASE_PORT || '8082'),
                 user: process.env.DATABASE_USER,
                 password: process.env.DATABASE_PASSWORD,
                 database: process.env.DATABASE_NAME,

@@ -3,7 +3,6 @@ import { createConnection } from '../../../lib/db';
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Check if request has a body
     const contentType = request.headers.get('content-type');
     
     if (!contentType || !contentType.includes('application/json')) {

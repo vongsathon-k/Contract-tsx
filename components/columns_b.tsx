@@ -61,7 +61,6 @@ const editFormSchema = z.object({
   waranty: z.string().optional(),
 })
 
-// Edit Modal Component
 const EditContractModal = ({ contract }: { contract: Contract }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -484,41 +483,56 @@ export const columns: ColumnDef<Contract>[] = [
       const contract = row.original
       
       const handleDelete = async () => {
-        if (!confirm(`คุณต้องการลบสัญญา ID: ${contract.id} หรือไม่?`)) {
-          return
-        }
+        // if (!confirm(`คุณต้องการลบสัญญา ID: ${contract.id} หรือไม่?`)) {
+        //   return
+        // }
+        const temptext = `คุณต้องการลบสัญญา ID: ${contract.id} หรือไม่?`
+        const Swal = (await import('sweetalert2')).default
+        await Swal.fire({
+          title: "ยืนยันการลบ",
+          text: temptext,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "ใช่ ลบเลย",
+          cancelButtonText: "ยกเลิก",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              const response = await fetch(`/api/contracts/${contract.id}`, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: contract.id }),
+              })
 
-        try {
-          const response = await fetch(`/api/contracts`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id: contract.id }),
-          })
-
-          if (response.ok) {
-            const Swal = (await import('sweetalert2')).default
-            await Swal.fire({
-              title: 'สำเร็จ!',
-              text: 'ลบข้อมูลเรียบร้อยแล้ว',
-              icon: 'success',
-              confirmButtonText: 'ตกลง'
-            })
-            window.location.reload()
-          } else {
-            throw new Error('Delete failed')
+              if (response.ok) {
+                await Swal.fire({
+                  title: 'สำเร็จ!',
+                  text: 'ลบข้อมูลเรียบร้อยแล้ว',
+                  icon: 'success',
+                  confirmButtonText: 'ตกลง'
+                })
+                window.location.reload()
+              } else {
+                throw new Error('Delete failed')
+              }
+            } catch (error) {
+              console.error('Error deleting contract:', error)
+              const Swal = (await import('sweetalert2')).default
+              await Swal.fire({
+                title: 'เกิดข้อผิดพลาด!',
+                text: 'ไม่สามารถลบข้อมูลได้',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+              })
+            }
+          }else{
+            return false
           }
-        } catch (error) {
-          console.error('Error deleting contract:', error)
-          const Swal = (await import('sweetalert2')).default
-          await Swal.fire({
-            title: 'เกิดข้อผิดพลาด!',
-            text: 'ไม่สามารถลบข้อมูลได้',
-            icon: 'error',
-            confirmButtonText: 'ตกลง'
-          })
-        }
+        });
       }
 
       return (

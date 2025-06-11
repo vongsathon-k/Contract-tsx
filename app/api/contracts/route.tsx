@@ -1,10 +1,12 @@
-import { createConnection } from '../../../lib/db'
+import { pool  } from '../../../lib/db'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from "next/cache"
 
 export async function GET() {
   try {
-    const connection = await createConnection()
-    const [rows] = await connection.execute('SELECT * FROM contract WHERE isdelete = 0')
+    const [rows] = await pool.execute(
+      'SELECT * FROM contract WHERE isdelete = 0 ORDER BY id DESC'
+    )
     const contracts = rows as any[]
     
     // Status mapping object
@@ -45,6 +47,7 @@ export async function GET() {
       division_name: divisionMap[contract.division_name] || "ไม่ระบุ", // Map status with fallback
       project_name: contract.project_name
     }))
+    revalidatePath('/contracts')
     
     return NextResponse.json(formattedContracts)
     
@@ -69,17 +72,8 @@ export async function POST(request: NextRequest) {
       deposit_amount,
       waranty, end_date } = body
 
-    // Validate required fields
-    // if (!recorder || !division || !project_name || !end_date) {
-    //   return NextResponse.json(
-    //     { success: false, error: 'All fields are required' },
-    //     { status: 400 }
-    //   )
-    // }
-
-    const connection = await createConnection()
     const params = [recorder || null, parseInt(division), project_name || null,  parseInt(way_type), fund_source || null, budget || null, contract_budget || null, partner_name || null, parseInt(deposit_type), deposit_amount || null, end_date || null, waranty || null]
-    const [result] = await connection.execute(
+    const [result] = await pool.execute(
       'INSERT INTO contract (`recorder`, `division_name`, `project_name`, `way_type`, `fund_source`, `budget`, `contract_budg`, `partner_name`, `deposit_type`, `deposit_amount`, `end_date`, `waranty`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         params
     )
