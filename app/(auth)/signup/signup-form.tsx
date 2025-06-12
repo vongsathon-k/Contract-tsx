@@ -35,6 +35,9 @@ const signupSchema = z
       .regex(/^[a-zA-Z0-9_]+$/, {
         message: "ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษร ตัวเลข และ _",
       }),
+    email: z.string().email({
+      message: "อีเมลไม่ถูกต้อง",
+    }),
     password: z.string().min(6, {
       message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
     }),
@@ -66,6 +69,7 @@ export default function SignupForm() {
     resolver: zodResolver(signupSchema),
     defaultValues: {
       username: "",
+      email: "",
       password: "",
       confirmPassword: "",
       firstname: "",
@@ -114,6 +118,7 @@ export default function SignupForm() {
       // Create FormData for file upload
       const formData = new FormData();
       formData.append("username", values.username);
+      formData.append("email", values.email);
       formData.append("password", values.password);
       formData.append("firstname", values.firstname);
       formData.append("surname", values.surname);
@@ -222,7 +227,20 @@ export default function SignupForm() {
                 </FormItem>
               )}
             />
-
+            {/* email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>อีเมล</FormLabel>
+                  <FormControl>
+                    <Input placeholder="example@gmail.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {/* Password Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField

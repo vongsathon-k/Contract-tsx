@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
-
+import * as React from "react";
 
 import {
   ColumnDef,
@@ -15,7 +14,7 @@ import {
   useReactTable,
   getPaginationRowModel,
   getSortedRowModel,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -24,7 +23,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 import {
   Select,
@@ -32,14 +31,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { DataTablePagination } from "./data-table-pagination"
-import { Dialog, DialogClose } from "@radix-ui/react-dialog"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { DataTablePagination } from "./data-table-pagination";
+import { Dialog, DialogClose } from "@radix-ui/react-dialog";
 import {
   DialogContent,
   DialogDescription,
@@ -47,12 +46,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -60,7 +59,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 
 // Updated form schema with all required fields
 const formSchema = z.object({
@@ -96,13 +95,12 @@ const formSchema = z.object({
   }),
   deposit_amount: z.string().optional(),
   waranty: z.string().optional(),
-
-})
+});
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  onRefresh?: () => void
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  onRefresh?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -110,11 +108,14 @@ export function DataTable<TData, TValue>({
   data,
   onRefresh,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false)
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -129,48 +130,49 @@ export function DataTable<TData, TValue>({
       partner_name: "",
       deposit_type: "",
     },
-  })
- 
+  });
+
   // Updated submit handler with API call
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await fetch('/api/contracts', {
-        method: 'POST',
+      const response = await fetch("/api/contracts", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
-      })
+      });
 
       if (response.ok) {
+        setIsDialogOpen(false);
         // Success
-        const Swal = (await import('sweetalert2')).default
+        const Swal = (await import("sweetalert2")).default;
         await Swal.fire({
-          title: 'สำเร็จ!',
-          text: 'เพิ่มสัญญาเรียบร้อยแล้ว',
-          icon: 'success',
-          confirmButtonText: 'ตกลง',
-          confirmButtonColor: '#f59f00',
-        })
-        
+          title: "สำเร็จ!",
+          text: "เพิ่มสัญญาเรียบร้อยแล้ว",
+          icon: "success",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#f59f00",
+        });
+
         // Reset form and close dialog
-        form.reset()
-        setIsDialogOpen(false)
-        
+        form.reset();
+        setIsDialogOpen(false);
+
         // Refresh the page to show new data
-        window.location.reload()
+        window.location.reload();
       } else {
-        throw new Error('Failed to create contract')
+        throw new Error("Failed to create contract");
       }
     } catch (error) {
-      console.error('Error creating contract:', error)
-      const Swal = (await import('sweetalert2')).default
+      console.error("Error creating contract:", error);
+      const Swal = (await import("sweetalert2")).default;
       await Swal.fire({
-        title: 'เกิดข้อผิดพลาด!',
-        text: 'ไม่สามารถเพิ่มสัญญาได้',
-        icon: 'error',
-        confirmButtonText: 'ตกลง'
-      })
+        title: "เกิดข้อผิดพลาด!",
+        text: "ไม่สามารถเพิ่มสัญญาได้",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+      });
     }
   }
 
@@ -191,8 +193,7 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
     },
-  }
-)
+  });
 
   return (
     <div className="w-full">
@@ -202,9 +203,9 @@ export function DataTable<TData, TValue>({
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
-              table.setPageSize(Number(value))
+              table.setPageSize(Number(value));
             }}
-          > 
+          >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
@@ -218,24 +219,30 @@ export function DataTable<TData, TValue>({
           </Select>
           <p className="text-sm font-medium">สัญญา</p>
         </div>
-        
+
         <div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="bg-orange-400 hover:bg-orange-500 text-white">
+              <Button
+                variant="outline"
+                className="bg-orange-400 hover:bg-orange-500 text-white"
+              >
                 เพิ่มสัญญา
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[725px]">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-8"
+                >
                   <DialogHeader>
                     <DialogTitle>เพิ่มข้อมูลสัญญา</DialogTitle>
                     <DialogDescription>
                       กรอกข้อมูลสัญญาใหม่ แล้วคลิกบันทึกเมื่อเสร็จสิ้น
                     </DialogDescription>
                   </DialogHeader>
-                  
+
                   <div className="grid gap-4">
                     <div className="grid grid-cols-4 gap-4">
                       <div className="grid col-span-2 gap-2">
@@ -260,17 +267,29 @@ export function DataTable<TData, TValue>({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>สำนัก/กอง</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="เลือกสำนัก/กอง" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  <SelectItem value="1">สำนักงานอัยการจังหวัดปราจีนบุรี</SelectItem>
-                                  <SelectItem value="2">สำนักงานอัยการคดีเยาวชนและครอบครัวจังหวัดปราจีนบุรี</SelectItem>
-                                  <SelectItem value="3">สำนักงานอัยการคุ้มครองสิทธิและช่วยเหลือทางกฎหมายและการบังคับคดีจังหวัดปราจีนบุรี</SelectItem>
-                                  <SelectItem value="4">สำนักงานอัยการคุ้มครองสิทธิและช่วยเหลือทางกฎหมายและการบังคับคดีจังหวัดปราจีนบุรี สาขากบินทร์บุรี </SelectItem>
+                                  <SelectItem value="1">
+                                    สำนักงานอัยการจังหวัดปราจีนบุรี
+                                  </SelectItem>
+                                  <SelectItem value="2">
+                                    สำนักงานอัยการคดีเยาวชนและครอบครัวจังหวัดปราจีนบุรี
+                                  </SelectItem>
+                                  <SelectItem value="3">
+                                    สำนักงานอัยการคุ้มครองสิทธิและช่วยเหลือทางกฎหมายและการบังคับคดีจังหวัดปราจีนบุรี
+                                  </SelectItem>
+                                  <SelectItem value="4">
+                                    สำนักงานอัยการคุ้มครองสิทธิและช่วยเหลือทางกฎหมายและการบังคับคดีจังหวัดปราจีนบุรี
+                                    สาขากบินทร์บุรี{" "}
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                               <FormMessage />
@@ -279,7 +298,7 @@ export function DataTable<TData, TValue>({
                         />
                       </div>
                     </div>
-                    
+
                     <div className="grid gap-3">
                       <FormField
                         control={form.control}
@@ -295,7 +314,7 @@ export function DataTable<TData, TValue>({
                         )}
                       />
                     </div>
-                    
+
                     <div className="grid gap-3">
                       <FormField
                         control={form.control}
@@ -303,25 +322,28 @@ export function DataTable<TData, TValue>({
                         render={({ field }) => (
                           <FormItem className="space-y-3">
                             <FormLabel>วิธีการ</FormLabel>
-                              <FormControl>
-                                <RadioGroup onValueChange={field.onChange}
-                                  defaultValue={field.value}
-                                  className="flex flex-row space-x-3"
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="1" id="specific" />
-                                    <Label htmlFor="specific">เฉพาะเจาะจง</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="2" id="eprice" />
-                                    <Label htmlFor="eprice">ประกวดราคาอิเล็กทรอนิกส์</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="3" id="selected" />
-                                    <Label htmlFor="selected">คัดเลือก</Label>
-                                  </div>
-                                </RadioGroup>
-                              </FormControl>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex flex-row space-x-3"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="1" id="specific" />
+                                  <Label htmlFor="specific">เฉพาะเจาะจง</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="2" id="eprice" />
+                                  <Label htmlFor="eprice">
+                                    ประกวดราคาอิเล็กทรอนิกส์
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="3" id="selected" />
+                                  <Label htmlFor="selected">คัดเลือก</Label>
+                                </div>
+                              </RadioGroup>
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -337,7 +359,10 @@ export function DataTable<TData, TValue>({
                             <FormItem>
                               <FormLabel>แหล่งที่มาของเงิน</FormLabel>
                               <FormControl>
-                                <Input placeholder="งบประมาณ/เงินรางวัล" {...field} />
+                                <Input
+                                  placeholder="งบประมาณ/เงินรางวัล"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -361,7 +386,7 @@ export function DataTable<TData, TValue>({
                       </div>
                     </div>
 
-                     <div className="grid grid-cols-4 gap-4">
+                    <div className="grid grid-cols-4 gap-4">
                       <div className="grid col-span-2 gap-2">
                         <FormField
                           control={form.control}
@@ -370,7 +395,11 @@ export function DataTable<TData, TValue>({
                             <FormItem>
                               <FormLabel>วงเงินตามสัญญา</FormLabel>
                               <FormControl>
-                                <Input placeholder="" {...field} />
+                                <Input
+                                  placeholder="1,000,000 บาท"
+                                  {...field}
+                                  value={field.value || ""}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -385,7 +414,10 @@ export function DataTable<TData, TValue>({
                             <FormItem>
                               <FormLabel>คู่สัญญา</FormLabel>
                               <FormControl>
-                                <Input placeholder="บริษัท 123 จำกัด" {...field} />
+                                <Input
+                                  placeholder="บริษัท 123 จำกัด"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -402,7 +434,10 @@ export function DataTable<TData, TValue>({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>หลักประกัน</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="เลือกหลักประกัน" />
@@ -410,8 +445,12 @@ export function DataTable<TData, TValue>({
                                 </FormControl>
                                 <SelectContent>
                                   <SelectItem value="1">เงินสด</SelectItem>
-                                  <SelectItem value="2">หนังสือค้ำประกัน</SelectItem>
-                                  <SelectItem value="3">ไม่ต้องวางหลักประกัน</SelectItem>
+                                  <SelectItem value="2">
+                                    หนังสือค้ำประกัน
+                                  </SelectItem>
+                                  <SelectItem value="3">
+                                    ไม่ต้องวางหลักประกัน
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                               <FormMessage />
@@ -466,10 +505,12 @@ export function DataTable<TData, TValue>({
                       </div>
                     </div>
                   </div>
-                  
+
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button type="button" variant="outline">ยกเลิก</Button>
+                      <Button type="button" variant="outline">
+                        ยกเลิก
+                      </Button>
                     </DialogClose>
                     <Button type="submit">บันทึก</Button>
                   </DialogFooter>
@@ -478,19 +519,24 @@ export function DataTable<TData, TValue>({
             </DialogContent>
           </Dialog>
         </div>
-        
+
         <div className="flex items-center py-4">
           <Input
             placeholder="ค้นหาชื่อโครงการ"
-            value={(table.getColumn("project_name")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn("project_name")?.getFilterValue() as string) ??
+              ""
+            }
             onChange={(event) =>
-              table.getColumn("project_name")?.setFilterValue(event.target.value)
+              table
+                .getColumn("project_name")
+                ?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
         </div>
       </div>
-      
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -506,7 +552,7 @@ export function DataTable<TData, TValue>({
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -520,14 +566,20 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   ไม่พบข้อมูล
                 </TableCell>
               </TableRow>
@@ -535,9 +587,9 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      
+
       {/* Replace the old pagination with the new advanced pagination */}
       <DataTablePagination table={table} />
     </div>
-  )
+  );
 }

@@ -1,21 +1,24 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { EditContractModal } from "./edit-contract-modal"
-import { DeleteContractButton } from "./delete-contract-button"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { EditContractModal } from "./edit-contract-modal";
+import { DeleteContractButton } from "./delete-contract-button";
+import { UploadFileModal } from "./upload-file-modal";
 
 export type Contract = {
-  id: number
-  recorder: string
-  end_date: string
-  project_name: string
-  division_name: string
-}
+  id: number;
+  recorder: string;
+  end_date: string;
+  project_name: string;
+  division_name: string;
+};
 
 // Create a function that returns columns with refresh capability
-export const createColumns = (onRefresh?: () => void): ColumnDef<Contract>[] => [
+export const createColumns = (
+  onRefresh?: () => void
+): ColumnDef<Contract>[] => [
   {
     accessorKey: "id",
     header: ({ column }) => {
@@ -27,7 +30,7 @@ export const createColumns = (onRefresh?: () => void): ColumnDef<Contract>[] => 
           ID
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -49,22 +52,28 @@ export const createColumns = (onRefresh?: () => void): ColumnDef<Contract>[] => 
   {
     accessorKey: "status",
     header: "ไฟล์",
+    cell: ({ row }) => {
+      const contract = row.original;
+      return <UploadFileModal contract={contract} />;
+    },
   },
   {
     accessorKey: "",
     header: "แก้ไข",
     cell: ({ row }) => {
-      const contract = row.original
-      return <EditContractModal contract={contract}  />
-    },  },
+      const contract = row.original;
+      return <EditContractModal contract={contract} />;
+    },
+  },
   {
     accessorKey: "",
     header: "ยกเลิก",
     cell: ({ row }) => {
-      const contract = row.original
-      return <DeleteContractButton contract={contract} onSuccess={onRefresh}  />
-    },  },
-]
+      const contract = row.original;
+      return <DeleteContractButton contract={contract} />;
+    },
+  },
+];
 
 // Export default columns for backward compatibility
-export const columns = createColumns()
+export const columns = createColumns();

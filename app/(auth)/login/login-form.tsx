@@ -73,21 +73,28 @@ export default function LoginForm() {
         }; path=/; max-age=86400; SameSite=Lax; Secure=${
           process.env.NODE_ENV === "production"
         }`;
-        router.push("/contract");
+        console.log(
+          "🍪 Cookie set, redirecting to:",
+          result.user.role === "admin" ? "/admin/users" : "/contract"
+        );
+        if (
+          result.user.role === "admin" ||
+          result.user.role === "super_admin"
+        ) {
+          router.push("/admin/users");
+        } else {
+          router.push("/contract");
+        }
       } else {
-        throw new Error(result.error || "เกิดข้อผิดพลาด");
+        throw new Error(result.message || "เกิดข้อผิดพลาด");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      await showErrorAlert(
-        "เข้าสู่ระบบไม่สำเร็จ!",
-        "ตรวจสอบชื่อผู้ใช้หรือรหัสผ่านอีกครั้ง"
-      );
+    } catch (error: any) {
+      // console.error("Login error:", error);
+      await showErrorAlert("เกิดข้อผิดพลาด!", error?.message);
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100">
       <div className="max-w-md w-full mx-4">

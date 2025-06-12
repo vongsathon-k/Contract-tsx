@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Contract } from "./contract-types"
-import { EditContractModal } from "./edit-contract-modal"
-import { DeleteContractButton } from "./delete-contract-button"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Contract } from "./contract-types";
+import { EditContractModal } from "./edit-contract-modal";
+import { DeleteContractButton } from "./delete-contract-button";
 
 export const contractColumns: ColumnDef<Contract>[] = [
   {
@@ -50,4 +50,4 @@ export const contractColumns: ColumnDef<Contract>[] = [
     header: "ยกเลิก",
     cell: ({ row }) => <DeleteContractButton contract={row.original} />,
   },
-]
+];
