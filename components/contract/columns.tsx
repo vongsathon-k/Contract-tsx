@@ -6,14 +6,7 @@ import { Button } from "@/components/ui/button";
 import { EditContractModal } from "./edit-contract-modal";
 import { DeleteContractButton } from "./delete-contract-button";
 import { UploadFileModal } from "./upload-file-modal";
-
-export type Contract = {
-  id: number;
-  recorder: string;
-  end_date: string;
-  project_name: string;
-  division_name: string;
-};
+import { Contract } from "./contract-types";
 
 // Create a function that returns columns with refresh capability
 export const createColumns = (
@@ -31,6 +24,9 @@ export const createColumns = (
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+    cell: ({ row }) => {
+      return <div className="text-center font-medium">{row.index + 1}</div>;
     },
   },
   {

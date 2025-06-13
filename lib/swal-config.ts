@@ -29,7 +29,7 @@ export const showErrorAlert = (title: string, text: string) => {
 export const showConfirmAlert = (
   title: string,
   text: string,
-  icon?: string
+  icon?: "success" | "error" | "warning" | "info" | "question"
 ) => {
   return Swal.fire({
     title,

@@ -25,3 +25,9 @@ export async function deleteData(data: any) {
   });
   return response;
 }
+
+export async function addData(data: any) {
+  console.log("Received data:", data);
+  const response = await axios.post(`/api/contracts`, data.values);
+  return response;
+}

@@ -1,12 +1,6 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const editFormSchema = z.object({
-  recorder: z.string().min(2, {
-    message: "ชื่อผู้บันทึกต้องมีอย่างน้อย 2 ตัวอักษร",
-  }),
-  division: z.string().min(1, {
-    message: "กรุณาเลือกสำนัก/กอง",
-  }),
   project_name: z.string().min(2, {
     message: "ชื่อโครงการต้องมีอย่างน้อย 2 ตัวอักษร",
   }),
@@ -22,6 +16,7 @@ export const editFormSchema = z.object({
   deposit_type: z.string().optional(),
   deposit_amount: z.string().optional(),
   waranty: z.string().optional(),
-})
+  contract_no: z.string().optional(),
+});
 
-export type EditFormData = z.infer<typeof editFormSchema>
+export type EditFormData = z.infer<typeof editFormSchema>;

@@ -43,8 +43,6 @@ export async function PUT(
     const id = params.id;
     const body = await request.json();
     const {
-      recorder,
-      division,
       project_name,
       way_type,
       fund_source,
@@ -55,6 +53,7 @@ export async function PUT(
       deposit_amount,
       end_date,
       waranty,
+      contract_no,
     } = body;
     console.log("body", body);
 
@@ -62,8 +61,6 @@ export async function PUT(
 
     const updateQuery = `
       UPDATE contract SET 
-        recorder = ?,
-        division_name = ?,
         project_name = ?,
         way_type = ?,
         fund_source = ?,
@@ -73,12 +70,11 @@ export async function PUT(
         deposit_type = ?,
         deposit_amount = ?,
         end_date = ?,
-        waranty = ?
+        waranty = ?,
+        contract_no = ?
       WHERE id = ? AND isdelete = 0
     `;
     const [result] = await connection.execute(updateQuery, [
-      recorder,
-      division,
       project_name,
       way_type,
       fund_source,
@@ -89,6 +85,7 @@ export async function PUT(
       deposit_amount,
       end_date,
       waranty,
+      contract_no,
       id,
     ]);
 

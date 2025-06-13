@@ -60,15 +60,18 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addData } from "@/app/action/contract";
+import { showSuccessAlert } from "@/lib/swal-config";
 
 // Updated form schema with all required fields
 const formSchema = z.object({
-  recorder: z.string().min(2, {
-    message: "ชื่อผู้บันทึกต้องมีอย่างน้อย 2 ตัวอักษร",
+  contract_no: z.string().min(2, {
+    message: "เลขที่สัญญาต้องมีอย่างน้อย 2 ตัวอักษร",
   }),
-  division: z.string().min(1, {
-    message: "กรุณาเลือกสำนัก/กอง",
-  }),
+  // division: z.string().min(1, {
+  //   message: "กรุณาเลือกสำนัก/กอง",
+  // }),
   project_name: z.string().min(2, {
     message: "ชื่อโครงการต้องมีอย่างน้อย 2 ตัวอักษร",
   }),
@@ -116,54 +119,48 @@ export function DataTable<TData, TValue>({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const queryclient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: addData,
+    onSuccess: async (data) => {
+      const response = data;
+      console.log(response);
+      if (response.status === 200) {
+        queryclient.invalidateQueries({ queryKey: ["contract"] });
+        setIsDialogOpen(false);
+        await showSuccessAlert("สำเร็จ!", "เพิ่มสัญญาเรียบร้อยแล้ว", 2000);
+        setIsDialogOpen(false);
+      } else {
+        throw new Error("Failed to update contract");
+      }
+    },
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      recorder: "",
-      division: "",
+      contract_no: "",
+      // division: "",
       project_name: "",
       end_date: "",
       way_type: "",
       fund_source: "",
+      budget: "",
       contract_budget: "",
       partner_name: "",
       deposit_type: "",
+      deposit_amount: "",
+      waranty: "",
     },
   });
 
   // Updated submit handler with API call
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await fetch("/api/contracts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+      mutation.mutate({
+        values,
       });
-
-      if (response.ok) {
-        setIsDialogOpen(false);
-        // Success
-        const Swal = (await import("sweetalert2")).default;
-        await Swal.fire({
-          title: "สำเร็จ!",
-          text: "เพิ่มสัญญาเรียบร้อยแล้ว",
-          icon: "success",
-          confirmButtonText: "ตกลง",
-          confirmButtonColor: "#f59f00",
-        });
-
-        // Reset form and close dialog
-        form.reset();
-        setIsDialogOpen(false);
-
-        // Refresh the page to show new data
-        window.location.reload();
-      } else {
-        throw new Error("Failed to create contract");
-      }
     } catch (error) {
       console.error("Error creating contract:", error);
       const Swal = (await import("sweetalert2")).default;
@@ -248,12 +245,12 @@ export function DataTable<TData, TValue>({
                       <div className="grid col-span-2 gap-2">
                         <FormField
                           control={form.control}
-                          name="recorder"
+                          name="contract_no"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>ผู้บันทึก</FormLabel>
+                              <FormLabel>เลขที่สัญญา</FormLabel>
                               <FormControl>
-                                <Input placeholder="ชื่อผู้บันทึก" {...field} />
+                                <Input placeholder="เลขที่สัญญา" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -261,7 +258,7 @@ export function DataTable<TData, TValue>({
                         />
                       </div>
                       <div className="grid col-span-2 gap-2">
-                        <FormField
+                        {/* <FormField
                           control={form.control}
                           name="division"
                           render={({ field }) => (
@@ -295,7 +292,7 @@ export function DataTable<TData, TValue>({
                               <FormMessage />
                             </FormItem>
                           )}
-                        />
+                        /> */}
                       </div>
                     </div>
 

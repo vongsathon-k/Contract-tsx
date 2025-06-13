@@ -19,16 +19,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { showErrorAlert, showSuccessAlert } from "@/lib/swal-config";
-
-export type Contract = {
-  id: number;
-  contract_file_path?: string;
-  attachment_file_path?: string;
-  contract_file_name?: string;
-  attachment_file_name?: string;
-  upload_date?: string;
-  status?: number;
-};
+import { Contract } from "./contract-types";
 
 interface UploadFileModalProps {
   contract: Contract;
@@ -48,10 +39,9 @@ export const UploadFileModal = ({
 
   const queryclient = useQueryClient();
 
-  // Check if contract has files uploaded
-  const hasFilesUploaded =
-    contractData?.contract_file_path && contractData?.attachment_file_path;
-
+  // ✅ Updated: Only check contract file, attachment is optional
+  const hasFilesUploaded = contract?.contract_file_path;
+  console.log(hasFilesUploaded);
   const mutation = useMutation({
     mutationFn: async (formData: FormData) => {
       const response = await fetch(`/api/contracts/${contract.id}/upload`, {
@@ -62,9 +52,9 @@ export const UploadFileModal = ({
     },
     onSuccess: async (data) => {
       if (data.ok) {
-        queryclient.invalidateQueries({ queryKey: ["contract"] });
         setIsOpen(false);
         await showSuccessAlert("สำเร็จ!", "อัพโหลดไฟล์เรียบร้อยแล้ว", 2000);
+        queryclient.invalidateQueries({ queryKey: ["contract"] });
         resetForm();
         if (onSuccess) onSuccess();
       } else {
@@ -93,6 +83,7 @@ export const UploadFileModal = ({
     } catch (error) {
       console.error("Error fetching contract:", error);
     } finally {
+      queryclient.invalidateQueries({ queryKey: ["contract"] });
       setIsLoading(false);
     }
   }, []);
@@ -184,12 +175,9 @@ export const UploadFileModal = ({
   };
 
   const handleUpload = async () => {
-    // If no files uploaded yet, require both files
-    if (!hasFilesUploaded && (!contractFile || !attachmentFile)) {
-      await showErrorAlert(
-        "กรุณาเลือกไฟล์",
-        "กรุณาเลือกไฟล์สัญญาและไฟล์เอกสารแนบ"
-      );
+    // ✅ Updated: Only require contract file, attachment is optional
+    if (!contractFile) {
+      await showErrorAlert("กรุณาเลือกไฟล์", "กรุณาเลือกไฟล์สัญญา");
       return;
     }
 
@@ -200,10 +188,10 @@ export const UploadFileModal = ({
       // Create FormData for file upload
       const formData = new FormData();
 
-      // Append files
-      if (contractFile) {
-        formData.append("contract_file", contractFile);
-      }
+      // Append contract file (required)
+      formData.append("contract_file", contractFile);
+
+      // ✅ Only append attachment file if it exists (optional)
       if (attachmentFile) {
         formData.append("attachment_file", attachmentFile);
       }
@@ -292,8 +280,10 @@ export const UploadFileModal = ({
             {hasFilesUploaded ? "ไฟล์สัญญา" : "อัพโหลดไฟล์สัญญา"}
           </DialogTitle>
           <DialogDescription>
-            {hasFilesUploaded ? "ดูและจัดการไฟล์สัญญา" : "อัพโหลดไฟล์สัญญา"} ID:{" "}
-            {contract.id}
+            {hasFilesUploaded
+              ? "ดูและจัดการไฟล์สัญญา"
+              : "อัพโหลดไฟล์สัญญาเลขที่"}{" "}
+            : {contract.contract_no}
           </DialogDescription>
         </DialogHeader>
 
@@ -370,65 +360,80 @@ export const UploadFileModal = ({
                   </div>
                 </div>
 
-                {/* Attachment File Info */}
-                <div className="bg-white p-4 rounded-lg border">
-                  <div className="flex items-center justify-between">
+                {/* ✅ Updated: Show attachment file info only if it exists */}
+                {contractData?.attachment_file_path && (
+                  <div className="bg-white p-4 rounded-lg border">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <FileText className="h-8 w-8 text-blue-500" />
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            ไฟล์เอกสารแนบหลักประกัน
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {contractData?.attachment_file_name ||
+                              "attachment.pdf"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handlePreview(
+                              contractData?.attachment_file_path || ""
+                            )
+                          }
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          ดู
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handleDownload(
+                              contractData?.attachment_file_path || "",
+                              contractData?.attachment_file_name ||
+                                "attachment.pdf"
+                            )
+                          }
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          ดาวน์โหลด
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ✅ Show message if no attachment file */}
+                {!contractData?.attachment_file_path && (
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <div className="flex items-center space-x-3">
-                      <FileText className="h-8 w-8 text-blue-500" />
+                      <FileText className="h-8 w-8 text-gray-400" />
                       <div>
-                        <p className="font-medium text-gray-900">
-                          ไฟล์เอกสารแนบ
+                        <p className="font-medium text-gray-600">
+                          ไฟล์เอกสารแนบหลักประกัน
                         </p>
-                        <p className="text-sm text-gray-600">
-                          {contractData?.attachment_file_name ||
-                            "attachment.pdf"}
+                        <p className="text-sm text-gray-500">
+                          ไม่มีไฟล์แนบ (ไม่บังคับ)
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          handlePreview(
-                            contractData?.attachment_file_path || ""
-                          )
-                        }
-                        className="text-blue-600 hover:text-blue-700"
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        ดู
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          handleDownload(
-                            contractData?.attachment_file_path || "",
-                            contractData?.attachment_file_name ||
-                              "attachment.pdf"
-                          )
-                        }
-                        className="text-green-600 hover:text-green-700"
-                      >
-                        <Download className="h-4 w-4 mr-1" />
-                        ดาวน์โหลด
-                      </Button>
-                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
-            {/* File Upload Section - Show when no files uploaded */}
+            {/* Upload Section - Show when no files or want to re-upload */}
             {!hasFilesUploaded && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  อัพโหลดไฟล์
-                </h3>
-
+              <div className="space-y-6">
                 {/* Contract File Upload */}
                 <div className="space-y-2">
                   <Label
@@ -466,7 +471,7 @@ export const UploadFileModal = ({
                   {contractFile && (
                     <div className="flex items-center justify-between p-3 bg-orange-50 border border-orange-200 rounded-lg">
                       <div className="flex items-center space-x-2">
-                        <FileText className="h-5 w-5 text-red-500" />
+                        <FileText className="h-5 w-5 text-orange-500" />
                         <div>
                           <p className="text-sm font-medium">
                             {contractFile.name}
@@ -492,13 +497,14 @@ export const UploadFileModal = ({
                   )}
                 </div>
 
-                {/* Attachment File Upload */}
+                {/* ✅ Updated: Attachment File Upload - Made Optional */}
                 <div className="space-y-2">
                   <Label
                     htmlFor="attachment-file"
                     className="text-sm font-medium"
                   >
-                    ไฟล์เอกสารแนบ (PDF) <span className="text-red-500">*</span>
+                    ไฟล์เอกสารแนบหลักประกัน (PDF){" "}
+                    <span className="text-gray-500 text-xs">(ไม่บังคับ)</span>
                   </Label>
                   <div className="flex items-center space-x-2">
                     <div className="flex-1">
@@ -516,10 +522,10 @@ export const UploadFileModal = ({
                         <div className="text-center">
                           <Upload className="mx-auto h-8 w-8 text-blue-400 mb-2" />
                           <p className="text-sm text-gray-600">
-                            คลิกเพื่อเลือกไฟล์เอกสารแนบ
+                            คลิกเพื่อเลือกไฟล์เอกสารแนบหลักประกัน
                           </p>
                           <p className="text-xs text-gray-500">
-                            PDF เท่านั้น (สูงสุด 10MB)
+                            PDF เท่านั้น (สูงสุด 10MB) - ไม่บังคับ
                           </p>
                         </div>
                       </Label>
@@ -564,7 +570,7 @@ export const UploadFileModal = ({
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                        className="bg-orange-400 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
                       ></div>
                     </div>
@@ -572,10 +578,73 @@ export const UploadFileModal = ({
                 )}
               </div>
             )}
+
+            {/* Re-upload Section - Show when files exist but want to replace */}
+            {/* {hasFilesUploaded && (
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-md font-medium text-gray-900">
+                    อัพโหลดไฟล์ใหม่
+                  </h4>
+                  <Badge
+                    variant="outline"
+                    className="text-orange-600 border-orange-600"
+                  >
+                    แทนที่ไฟล์เดิม
+                  </Badge>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="new-contract-file"
+                      className="text-sm font-medium"
+                    >
+                      ไฟล์สัญญาใหม่ (PDF){" "}
+                      <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="new-contract-file"
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleContractFileChange}
+                      className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                    />
+                    {contractFile && (
+                      <p className="text-sm text-green-600">
+                        ✓ เลือกไฟล์: {contractFile.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="new-attachment-file"
+                      className="text-sm font-medium"
+                    >
+                      ไฟล์เอกสารแนบใหม่ (PDF){" "}
+                      <span className="text-gray-500 text-xs">(ไม่บังคับ)</span>
+                    </Label>
+                    <Input
+                      id="new-attachment-file"
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleAttachmentFileChange}
+                      className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                    {attachmentFile && (
+                      <p className="text-sm text-green-600">
+                        ✓ เลือกไฟล์: {attachmentFile.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )} */}
           </div>
         )}
 
-        <DialogFooter>
+        <DialogFooter className="flex justify-between">
           <Button
             type="button"
             variant="outline"
@@ -587,22 +656,23 @@ export const UploadFileModal = ({
             {hasFilesUploaded ? "ปิด" : "ยกเลิก"}
           </Button>
 
-          {!hasFilesUploaded && (
+          {/* ✅ Updated: Show upload button based on file selection */}
+          {(!hasFilesUploaded || contractFile || attachmentFile) && (
             <Button
+              type="button"
               onClick={handleUpload}
-              disabled={isLoading || !contractFile || !attachmentFile}
-              className="bg-green-500 hover:bg-green-600 text-white"
+              disabled={isLoading || !contractFile} // ✅ Only require contract file
+              className="bg-orange-400 hover:bg-orange-500 text-white"
             >
               {isLoading ? (
                 <div className="flex items-center space-x-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   <span>กำลังอัพโหลด...</span>
                 </div>
+              ) : hasFilesUploaded ? (
+                "อัพเดทไฟล์"
               ) : (
-                <div className="flex items-center space-x-2">
-                  <Upload className="h-4 w-4" />
-                  <span>อัพโหลดไฟล์</span>
-                </div>
+                "อัพโหลดไฟล์"
               )}
             </Button>
           )}

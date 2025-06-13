@@ -73,8 +73,6 @@ export const EditContractModal = ({
   const form = useForm<EditFormData>({
     resolver: zodResolver(editFormSchema),
     defaultValues: {
-      recorder: "",
-      division: "",
       project_name: "",
       end_date: "",
       way_type: "",
@@ -85,6 +83,7 @@ export const EditContractModal = ({
       deposit_type: "",
       deposit_amount: "",
       waranty: "",
+      contract_no: "",
     },
   });
 
@@ -104,8 +103,6 @@ export const EditContractModal = ({
 
         // Set form values after data is fetched. Ensure all fields are handled.
         form.reset({
-          recorder: data.recorder || "",
-          division: data.division_name?.toString() || "",
           project_name: data.project_name || "",
           end_date: data.end_date
             ? new Date(data.end_date).toISOString().split("T")[0]
@@ -118,6 +115,7 @@ export const EditContractModal = ({
           deposit_type: data.deposit_type?.toString() || "",
           deposit_amount: data.deposit_amount || "",
           waranty: data.waranty || "",
+          contract_no: data.contract_no || "",
         });
       } catch (error) {
         console.error("Error fetching contract:", error);
@@ -177,7 +175,7 @@ export const EditContractModal = ({
         <DialogHeader>
           <DialogTitle>แก้ไขข้อมูลสัญญา</DialogTitle>
           <DialogDescription>
-            แก้ไขข้อมูลสัญญา ID: {contract.id}
+            แก้ไขข้อมูลสัญญา ID: {contract.contract_no}
           </DialogDescription>
         </DialogHeader>
 
@@ -192,45 +190,13 @@ export const EditContractModal = ({
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="recorder"
+                  name="contract_no"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ผู้บันทึก</FormLabel>
+                      <FormLabel>เลขที่สัญญา</FormLabel>
                       <FormControl>
-                        <Input placeholder="ชื่อผู้บันทึก" {...field} />
+                        <Input placeholder="เลขที่สัญญา" {...field} />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="division"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>สำนัก/กอง</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="เลือกสำนัก/กอง" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="1">
-                            สำนักงานอัยการจังหวัดปราจีนบุรี
-                          </SelectItem>
-                          <SelectItem value="2">
-                            สำนักงานอัยการคดีเยาวชนและครอบครัวจังหวัดปราจีนบุรี
-                          </SelectItem>
-                          <SelectItem value="3">
-                            สำนักงานอัยการคุ้มครองสิทธิและช่วยเหลือทางกฎหมายและการบังคับคดีจังหวัดปราจีนบุรี
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

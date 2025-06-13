@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { createColumns, Contract } from "@/components/contract/columns";
+import { useState, useMemo } from "react";
+import { createColumns } from "@/components/contract/columns";
 import { DataTable } from "@/components/contract/data-table";
 import { ClipLoader } from "react-spinners";
 import { getData } from "@/app/action/contract";

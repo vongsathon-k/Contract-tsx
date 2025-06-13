@@ -20,9 +20,11 @@ export async function POST(request: NextRequest) {
     connection = await createConnection();
 
     const [users] = await connection.execute(
-      `SELECT id, username, password, firstname, surname, position, picture, email, status, role
-       FROM users 
-       WHERE username = ? `,
+      `SELECT u.id, u.username, u.password, u.firstname, u.surname, u.position, 
+              u.picture, u.email, u.status, u.role, u.division_id, d.name as division_name
+       FROM users u 
+       LEFT JOIN divisions d ON u.division_id = d.id 
+       WHERE u.username = ?`,
       [username]
     );
 
@@ -81,15 +83,18 @@ export async function POST(request: NextRequest) {
       username: user.username,
       email: user.email,
       position: user.position,
+      divisionId: user.division_id,
       role: user.role || "user",
+      fullname: user.firstname + " " + user.lastname,
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setExpirationTime("24h")
+      .setExpirationTime("8h")
       .sign(secret);
     console.log("🎫 Token created for user:", {
       userId: user.id,
       role: user.role,
+      divisionId: user.division_id,
     });
 
     const { password: _, ...userWithoutPassword } = user;

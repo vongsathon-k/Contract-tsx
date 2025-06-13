@@ -38,7 +38,7 @@ export const DeleteContractButton = ({
   const handleDelete = async () => {
     const result = await showConfirmAlert(
       "ยืนยันการลบ",
-      `คุณต้องการลบสัญญา ID: ${contract.id} หรือไม่?`
+      `คุณต้องการลบสัญญาเลขที่: ${contract.contract_no} หรือไม่?`
     );
 
     if (result.isConfirmed) {
