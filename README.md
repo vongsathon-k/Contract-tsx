@@ -1,77 +1,142 @@
-<<<<<<< HEAD
-# Contract Management System
+# 📋 Contract Management System (ระบบทะเบียนคุมสัญญา)
 
-A modern web application built with Next.js for managing contracts with features like data visualization, CRUD operations, and advanced table functionality.
+A modern web application for managing contracts at the Office of the Attorney General, Thailand (สำนักงานอัยการสูงสุด).
 
-## 🚀 Features
+## 🌟 Features
 
-- **Contract Management**: Create, read, update, and delete contracts
-- **Advanced Data Table**: Sortable columns, pagination, and search functionality
-- **Thai Localization**: Full Thai language support including date formatting
-- **Soft Delete**: Safe deletion with recovery options
-- **Responsive Design**: Works on desktop and mobile devices
-- **Real-time Updates**: Instant feedback with SweetAlert2 notifications
+### 📄 Contract Management
+
+- ✅ Create, edit, and delete contracts
+- ✅ Upload contract files (PDF) and optional attachments
+- ✅ View and download contract documents
+- ✅ Track contract status and expiration dates
+- ✅ Search and filter contracts
+- ✅ Export contract data
+
+### 👥 User Management
+
+- ✅ User registration and authentication
+- ✅ Role-based access control (Admin/User)
+- ✅ User approval system
+- ✅ Profile management
+- ✅ Password reset functionality
+
+### 🔐 Security
+
+- ✅ JWT-based authentication
+- ✅ Password hashing with bcrypt
+- ✅ Protected routes and API endpoints
+- ✅ File upload validation
+- ✅ SQL injection prevention
+
+### 📱 User Interface
+
+- ✅ Responsive design for all devices
+- ✅ Modern UI with Tailwind CSS
+- ✅ Thai language support
+- ✅ Dark/Light theme toggle
+- ✅ Interactive data tables
+- ✅ File drag-and-drop upload
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 14, React, TypeScript
-- **UI Components**: shadcn/ui, Tailwind CSS
-- **Data Table**: TanStack Table (React Table)
-- **Database**: MySQL with custom connection pooling
-- **Icons**: Lucide React, Font Awesome
-- **Notifications**: SweetAlert2
+### Frontend
 
-## 📋 Prerequisites
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **Shadcn/ui** - Modern UI components
+- **React Hook Form** - Form handling
+- **Zod** - Schema validation
+- **TanStack Query** - Data fetching and caching
+- **Lucide React** - Icon library
 
-Before running this project, make sure you have:
+### Backend
 
-- Node.js 18+ installed
-- MySQL database server
-- npm or yarn package manager
+- **Next.js API Routes** - Server-side API
+- **MySQL** - Database
+- **JWT** - Authentication tokens
+- **bcryptjs** - Password hashing
+- **Nodemailer** - Email functionality
 
-## 🔧 Installation
+### Development Tools
+
+- **Docker** - Containerization
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- MySQL 8.0+
+- Docker (optional)
+
+### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone <your-repository-url>
-   cd contract-management-system
-   ```
+
+```bash
+git clone https://github.com/vongsathon-k/Contract-tsx.git
+cd Contract-tsx
+```
 
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+
+```bash
+npm install
+```
 
 3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
-   ```env
-   DB_HOST=localhost
-   DB_USER=your_username
-   DB_PASSWORD=your_password
-   DB_NAME=your_database_name
-   ```
 
-4. **Set up the database**
-   Create a MySQL table with the following structure:
-   ```sql
-   CREATE TABLE contract (
-     id INT PRIMARY KEY AUTO_INCREMENT,
-     recorder VARCHAR(255),
-     description TEXT,
-     amountcontract DECIMAL(10,2),
-     end_date DATE,
-     project_name VARCHAR(255),
-     division_name VARCHAR(255),
-     status INT DEFAULT 1,
-     isdelete TINYINT DEFAULT 0,
-     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-   );
-   ```
+```bash
+cp .env.example .env
+```
+
+Edit `.env` file:
+
+```env
+# Database Configuration
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_USER=root
+DATABASE_PASSWORD=your_password
+DATABASE_NAME=contract
+
+# JWT Secret
+JWT_SECRET=your_super_secret_jwt_key
+
+# Email Configuration (Optional)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+
+# Next.js Configuration
+NEXTAUTH_URL=http://localhost:3000
+```
+
+4. **Set up database**
+
+Using Docker:
+
+```bash
+docker-compose up -d
+```
+
+Or manually create MySQL database and import schema:
+
+```sql
+CREATE DATABASE contract;
+-- Import your SQL schema file
+```
 
 5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
+
+```bash
+npm run dev
+```
 
 6. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
@@ -79,391 +144,199 @@ Before running this project, make sure you have:
 ## 📁 Project Structure
 
 ```
-├── app/
-│   ├── api/
-│   │   ├── contracts/
-│   │   │   └── route.tsx          # GET contracts API
-│   │   └── delete/
-│   │       └── [id]/
-│   │           └── route.tsx      # DELETE contract API
-│   ├── contract/
-│   │   ├── columns.tsx            # Table column definitions
-│   │   ├── data-table.tsx         # Main data table component
-│   │   ├── data-table-pagination.tsx # Pagination component
-│   │   └── page.tsx               # Contract management page
-│   └── layout.tsx
-├── components/
-│   └── ui/                        # shadcn/ui components
-├── lib/
-│   └── db.ts                      # Database connection
-└── README.md
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Authentication pages
+│   ├── admin/             # Admin pages
+│   ├── api/               # API routes
+│   ├── contract/          # Contract management pages
+│   └── globals.css        # Global styles
+├── components/            # Reusable components
+│   ├── ui/               # UI components (Shadcn)
+│   └── contract/         # Contract-specific components
+├── contexts/             # React contexts
+├── lib/                  # Utility functions
+├── public/               # Static files
+│   └── uploads/          # File uploads
+├── middleware.ts         # Next.js middleware
+└── docker-compose.yml    # Docker configuration
 ```
 
-## 🎯 Usage
+## 🔧 Configuration
 
-### Viewing Contracts
-- Navigate to `/contract` to view all contracts
-- Use the search bar to filter by project name
-- Sort columns by clicking on column headers
-- Use pagination controls to navigate through pages
+### Database Schema
 
-### Deleting Contracts
-- Click the delete button (❌) in the "ยกเลิก" column
-- Confirm deletion in the SweetAlert2 dialog
-- The contract will be soft-deleted (marked as deleted, not permanently removed)
+The application uses MySQL with the following main tables:
 
-### Status Mapping
-The system maps numeric status values to Thai labels:
-- `1` → "ทดสอบ" (Test)
-- `2` → "อนุมัติ" (Approved)
-- `3` → "ปิด" (Closed)
+- `users` - User accounts and profiles
+- `contract` - Contract records
+- `divisions` - Organization divisions
 
-### Date Formatting
-Dates are automatically converted to Thai Buddhist calendar format:
-- Input: `2024-03-15`
-- Output: `15 มีนาคม 2567`
+### File Upload
 
-## 🔌 API Endpoints
+- **Supported formats**: PDF only
+- **Max file size**: 10MB per file
+- **Storage**: Local filesystem (`public/uploads/`)
+- **Contract file**: Required
+- **Attachment file**: Optional
 
-### GET /api/contracts
-Retrieves all active contracts (not soft-deleted)
+### User Roles
 
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "recorder": "John Doe",
-    "end_date": "15 มีนาคม 2567",
-    "status": "ทดสอบ",
-    "project_name": "Sample Project"
-  }
-]
-```
-
-### DELETE /api/delete/[id]
-Soft deletes a contract by ID
-
-**Parameters:**
-- `id`: Contract ID to delete
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Contract deleted successfully"
-}
-```
-
-## 🎨 Customization
-
-### Adding New Columns
-1. Update the `Contract` type in `columns.tsx`
-2. Add new column definition to the `columns` array
-3. Update the database query in the API routes
-
-### Changing Status Labels
-Modify the `statusMap` object in `page.tsx`:
-```typescript
-const statusMap: { [key: number]: string } = {
-  1: "Your Custom Label",
-  2: "Another Label",
-  3: "Third Label"
-}
-```
-
-### Styling
-The project uses Tailwind CSS. Modify classes in components or update the global styles.
+- **Admin**: Full system access, user management
+- **User**: Contract management only
+- **Pending**: Awaiting admin approval
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically
+### Production Build
 
-### Other Platforms
-1. Build the project: `npm run build`
-2. Start the production server: `npm start`
-3. Configure your hosting platform accordingly
+```bash
+npm run build
+npm start
+```
 
-## 🤝 Contributing
+### Docker Deployment
+
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Environment Variables for Production
+
+```env
+NODE_ENV=production
+NEXTAUTH_URL=https://your-domain.com
+DATABASE_HOST=your-production-db-host
+# ... other production configs
+```
+
+## 📖 API Documentation
+
+### Authentication Endpoints
+
+- `POST /api/login` - User login
+- `POST /api/register` - User registration
+- `POST /api/forgot-password` - Password reset request
+
+### Contract Endpoints
+
+- `GET /api/contracts` - Get all contracts
+- `GET /api/contracts/[id]` - Get contract by ID
+- `POST /api/contracts` - Create new contract
+- `PUT /api/contracts/[id]` - Update contract
+- `DELETE /api/contracts/[id]` - Delete contract
+- `POST /api/contracts/[id]/upload` - Upload contract files
+
+### Admin Endpoints
+
+- `GET /api/admin/users` - Get all users (Admin only)
+- `PUT /api/admin/users/[id]` - Update user status (Admin only)
+
+## 🔒 Security Features
+
+### Authentication
+
+- JWT tokens with expiration
+- Secure HTTP-only cookies
+- Password hashing with bcrypt
+- Protected routes middleware
+
+### File Upload Security
+
+- File type validation (PDF only)
+- File size limits (10MB)
+- Secure file naming
+- Path traversal prevention
+
+### Database Security
+
+- Prepared statements
+- Connection pooling
+- SQL injection prevention
+- Input validation with Zod
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run E2E tests
+npm run test:e2e
+```
+
+## 📝 Contributing
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-feature`
-3. Commit your changes: `git commit -m 'Add new feature'`
-4. Push to the branch: `git push origin feature/new-feature`
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📝 License
+### Code Style
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Use TypeScript for type safety
+- Follow ESLint and Prettier configurations
+- Write meaningful commit messages
+- Add comments for complex logic
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
 **Database Connection Error**
-- Check your `.env.local` file
-- Ensure MySQL server is running
-- Verify database credentials
 
-**Table Not Loading**
-- Check browser console for errors
-- Verify API endpoints are working
-- Check database table structure
+```bash
+# Check if MySQL is running
+sudo systemctl status mysql
 
-**Delete Function Not Working**
-- Ensure SweetAlert2 is installed
-- Check API route configuration
-- Verify database permissions
+# Check environment variables
+echo $DATABASE_HOST
+```
+
+**File Upload Issues**
+
+```bash
+# Check upload directory permissions
+chmod 755 public/uploads
+```
+
+**Build Errors**
+
+```bash
+# Clear Next.js cache
+rm -rf .next
+npm run build
+```
 
 ## 📞 Support
 
-If you encounter any issues or have questions, please:
-1. Check the troubleshooting section
-2. Search existing issues on GitHub
-3. Create a new issue with detailed information
+For support and questions:
 
-## 🙏 Acknowledgments
+- 📧 Email: l2omeol3oat@gmail.com
+- 🐛 Issues: [GitHub Issues](https://github.com/vongsathon-k/Contract-tsx/issues)
+- 📖 Documentation: [Wiki](https://github.com/vongsathon-k/Contract-tsx/wiki)
 
-- [Next.js](https://nextjs.org/) for the amazing framework
-- [shadcn/ui](https://ui.shadcn.com/) for beautiful UI components
-- [TanStack Table](https://tanstack.com/table) for powerful table functionality
-- [SweetAlert2](https://sweetalert2.github.io/) for elegant alerts
-=======
-# Contract Management System
-
-A modern web application built with Next.js for managing contracts with features like data visualization, CRUD operations, and advanced table functionality.
-
-## 🚀 Features
-
-- **Contract Management**: Create, read, update, and delete contracts
-- **Advanced Data Table**: Sortable columns, pagination, and search functionality
-- **Thai Localization**: Full Thai language support including date formatting
-- **Soft Delete**: Safe deletion with recovery options
-- **Responsive Design**: Works on desktop and mobile devices
-- **Real-time Updates**: Instant feedback with SweetAlert2 notifications
-
-## 🛠️ Tech Stack
-
-- **Frontend**: Next.js 14, React, TypeScript
-- **UI Components**: shadcn/ui, Tailwind CSS
-- **Data Table**: TanStack Table (React Table)
-- **Database**: MySQL with custom connection pooling
-- **Icons**: Lucide React, Font Awesome
-- **Notifications**: SweetAlert2
-
-## 📋 Prerequisites
-
-Before running this project, make sure you have:
-
-- Node.js 18+ installed
-- MySQL database server
-- npm or yarn package manager
-
-## 🔧 Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <your-repository-url>
-   cd contract-management-system
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
-   ```env
-   DB_HOST=localhost
-   DB_USER=your_username
-   DB_PASSWORD=your_password
-   DB_NAME=your_database_name
-   ```
-
-4. **Set up the database**
-   Create a MySQL table with the following structure:
-   ```sql
-   CREATE TABLE contract (
-     id INT PRIMARY KEY AUTO_INCREMENT,
-     recorder VARCHAR(255),
-     description TEXT,
-     amountcontract DECIMAL(10,2),
-     end_date DATE,
-     project_name VARCHAR(255),
-     division_name VARCHAR(255),
-     status INT DEFAULT 1,
-     isdelete TINYINT DEFAULT 0,
-     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-   );
-   ```
-
-5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-## 📁 Project Structure
-
-```
-├── app/
-│   ├── api/
-│   │   ├── contracts/
-│   │   │   └── route.tsx          # GET contracts API
-│   │   └── delete/
-│   │       └── [id]/
-│   │           └── route.tsx      # DELETE contract API
-│   ├── contract/
-│   │   ├── columns.tsx            # Table column definitions
-│   │   ├── data-table.tsx         # Main data table component
-│   │   ├── data-table-pagination.tsx # Pagination component
-│   │   └── page.tsx               # Contract management page
-│   └── layout.tsx
-├── components/
-│   └── ui/                        # shadcn/ui components
-├── lib/
-│   └── db.ts                      # Database connection
-└── README.md
-```
-
-## 🎯 Usage
-
-### Viewing Contracts
-- Navigate to `/contract` to view all contracts
-- Use the search bar to filter by project name
-- Sort columns by clicking on column headers
-- Use pagination controls to navigate through pages
-
-### Deleting Contracts
-- Click the delete button (❌) in the "ยกเลิก" column
-- Confirm deletion in the SweetAlert2 dialog
-- The contract will be soft-deleted (marked as deleted, not permanently removed)
-
-### Status Mapping
-The system maps numeric status values to Thai labels:
-- `1` → "ทดสอบ" (Test)
-- `2` → "อนุมัติ" (Approved)
-- `3` → "ปิด" (Closed)
-
-### Date Formatting
-Dates are automatically converted to Thai Buddhist calendar format:
-- Input: `2024-03-15`
-- Output: `15 มีนาคม 2567`
-
-## 🔌 API Endpoints
-
-### GET /api/contracts
-Retrieves all active contracts (not soft-deleted)
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "recorder": "John Doe",
-    "end_date": "15 มีนาคม 2567",
-    "status": "ทดสอบ",
-    "project_name": "Sample Project"
-  }
-]
-```
-
-### DELETE /api/delete/[id]
-Soft deletes a contract by ID
-
-**Parameters:**
-- `id`: Contract ID to delete
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Contract deleted successfully"
-}
-```
-
-## 🎨 Customization
-
-### Adding New Columns
-1. Update the `Contract` type in `columns.tsx`
-2. Add new column definition to the `columns` array
-3. Update the database query in the API routes
-
-### Changing Status Labels
-Modify the `statusMap` object in `page.tsx`:
-```typescript
-const statusMap: { [key: number]: string } = {
-  1: "Your Custom Label",
-  2: "Another Label",
-  3: "Third Label"
-}
-```
-
-### Styling
-The project uses Tailwind CSS. Modify classes in components or update the global styles.
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically
-
-### Other Platforms
-1. Build the project: `npm run build`
-2. Start the production server: `npm start`
-3. Configure your hosting platform accordingly
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-feature`
-3. Commit your changes: `git commit -m 'Add new feature'`
-4. Push to the branch: `git push origin feature/new-feature`
-5. Submit a pull request
-
-## 📝 License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Database Connection Error**
-- Check your `.env.local` file
-- Ensure MySQL server is running
-- Verify database credentials
-
-**Table Not Loading**
-- Check browser console for errors
-- Verify API endpoints are working
-- Check database table structure
-
-**Delete Function Not Working**
-- Ensure SweetAlert2 is installed
-- Check API route configuration
-- Verify database permissions
-
-## 📞 Support
-
-If you encounter any issues or have questions, please:
-1. Check the troubleshooting section
-2. Search existing issues on GitHub
-3. Create a new issue with detailed information
-
 ## 🙏 Acknowledgments
 
-- [Next.js](https://nextjs.org/) for the amazing framework
-- [shadcn/ui](https://ui.shadcn.com/) for beautiful UI components
-- [TanStack Table](https://tanstack.com/table) for powerful table functionality
-- [SweetAlert2](https://sweetalert2.github.io/) for elegant alerts
->>>>>>> 3bc981af51bf14c6475f6c338492e14a42df8463
+- Office of the Attorney General, Prachinburi Province
+- Next.js team for the amazing framework
+- Shadcn for the beautiful UI components
+- All contributors and testers
+
+## 📊 Project Status
+
+- ✅ **Version**: 1.0.0
+- ✅ **Status**: Production Ready
+- ✅ **Last Updated**: December 2024
+- ✅ **Maintenance**: Active
+
+---
+
+Made with ❤️ for the Office of the Attorney General, Thailand

@@ -125,7 +125,6 @@ export function DataTable<TData, TValue>({
     mutationFn: addData,
     onSuccess: async (data) => {
       const response = data;
-      console.log(response);
       if (response.status === 200) {
         queryclient.invalidateQueries({ queryKey: ["contract"] });
         setIsDialogOpen(false);
